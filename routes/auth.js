@@ -2,7 +2,17 @@ const express = require("express");
 const passport = require("passport");
 const ActivityLog = require("../model/ActivityLog");
 const router = express.Router();
+const isAuthenticated = require("../middlewares/authMiddleware");
 
+router.get("/session", isAuthenticated, (req, res) => {
+  res.json({
+    id: req.user._id,
+    name: req.user.name,
+    email: req.user.email,
+    avatar: req.user.avatar,
+    lastLogin: req.user.lastLogin
+  });
+});
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
