@@ -1,6 +1,6 @@
 const express = require("express");
 const passport = require("passport");
-
+const ActivityLog = require("../model/ActivityLog");
 const router = express.Router();
 
 router.get(
@@ -8,10 +8,20 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+
+
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
+  async (req, res) => {
+
+    await ActivityLog.create({
+      userId: req.user._id,
+      action: "LOGIN",
+      ip: req.ip,
+      userAgent: req.headers["user-agent"]
+    });
+
     res.send("Login Successful");
   }
 );
